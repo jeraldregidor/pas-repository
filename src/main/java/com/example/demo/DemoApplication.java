@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,18 +27,26 @@ public class DemoApplication {
 
 	@Bean
 	CommandLineRunner run(MyUserService userService){
-		return args -> {
-			userService.saveRole(new Role("USER"));
-			userService.saveRole(new Role("ADMIN"));
+		try {
+			Optional<User> userOpt = Optional.of(userService.getUser(pasConfigProperties.admin1Em()));
+			if(userOpt.isPresent()){
+				System.out.println("\n		**********System Restart**********\n");
+			}
+			return null;
+		} catch (Exception e) {
+			return args -> {
 
-			userService.saveUser(new User("Jerald", "Herrera", "Regidor", pasConfigProperties.admin1Em(), pasConfigProperties.admin1Pw(), "Laguna"));
-			userService.addRole(pasConfigProperties.admin1Em(), "ADMIN");
+				userService.saveRole(new Role("USER"));
+				userService.saveRole(new Role("ADMIN"));
 
-			userService.saveUser(new User("Charles", "Briones", "Pitagan", pasConfigProperties.admin2Em(), pasConfigProperties.admin2Pw(), "Cavite"));
-			userService.addRole(pasConfigProperties.admin2Em(), "ADMIN");
+				userService.saveUser(new User("Jerald", "Herrera", "Regidor", pasConfigProperties.admin1Em(), pasConfigProperties.admin1Pw(), "Laguna"));
+				userService.addRole(pasConfigProperties.admin1Em(), "ADMIN");
 
-			userService.saveUser(new User("Regem", "Pogi", "Martin", "regem@gmail.com", "regem123", "Laguna"));
+				userService.saveUser(new User("Charles", "Briones", "Pitagan", pasConfigProperties.admin2Em(), pasConfigProperties.admin2Pw(), "Cavite"));
+				userService.addRole(pasConfigProperties.admin2Em(), "ADMIN");
 
+				userService.saveUser(new User("Regem", "Pogi", "Martin", "regem@gmail.com", "regem123", "Laguna"));
+			
 			// for(int x = 0; x<50 ; x++){
 			// 	String firstName = "firstname" + x;
 			// 	String middleName = "middle" + x;
@@ -46,7 +56,7 @@ public class DemoApplication {
 			// 	String address = "address" + x;
 			// 	userService.saveUser(new User(firstName, middleName, lastName, email, password, address));	
 			// }
-
-		};
+			};
+		}
 	}
 }
